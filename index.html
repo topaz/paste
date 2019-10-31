@@ -115,7 +115,7 @@ function get_url(format) {
       var base64 = reader.result.substr(reader.result.indexOf(",")+1);
       var url = "https://"+location.host+location.pathname+"#"+base64;
       var result;
-      if (format === 'reddit') {
+      if (format === 'markdown') {
         result = "[paste]("+url+")";
       } else {
         result = url;
@@ -135,6 +135,6 @@ function invert() {
 </head>
 <body>
 <div id="plaintext-wrapper"><textarea id="plaintext"></textarea></div>
-<div id="nav"><a class="nav-left" href="javascript:void(0)" onclick="invert()">[invert]</a><a href="javascript:void(0)" onclick="get_url('raw')">[get url]</a><a href="javascript:void(0)" onclick="get_url('reddit')">[get reddit link]</a></div>
+<div id="nav"><a class="nav-left" href="javascript:void(0)" onclick="invert()">[invert colors]</a><a href="javascript:void(0)" onclick="get_url('raw')">[get url]</a><a href="javascript:void(0)" onclick="get_url('markdown')">[get markdown link]</a></div>
 </body>
 </html>
