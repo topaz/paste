@@ -40,9 +40,12 @@ body.invert #plaintext {
   text-align: right;
   vertical-align: middle;
   background: #333333;
+  color: #ffffff;
+  white-space: nowrap;
 }
 body.invert #nav {
   background: #aaaaaa;
+  color: #000000;
 }
 #nav .nav-left {
   float: left;
@@ -51,10 +54,8 @@ body.invert #nav {
   display: inline-block;
   padding: 0 .5em;
   text-decoration: none;
-  color: #ffffff;
-}
-body.invert #nav a {
-  color: #000000;
+  color: inherit;
+  cursor: pointer;
 }
 #nav a:hover {
   background: #666666;
@@ -62,6 +63,17 @@ body.invert #nav a {
 body.invert #nav a:hover {
   background: #999999;
 }
+#nav #text-offer-value {
+  border: 1px solid #999999;
+  background: transparent;
+  width: calc(100vw - 11em);
+  text-overflow: ellipsis;
+  color: inherit;
+  margin-right: 5px;
+}
+#nav .nav-text-offer { display:none; }
+#nav.text-offer .nav-default { display:none; }
+#nav.text-offer .nav-text-offer { display:inline; }
 </style>
 <script src="lzma.js"></script>
 <script>
@@ -102,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 });
 
-function get_url(format) {
+function url_generate(format) {
   var plaintext = document.getElementById("plaintext").value;
   lzma.compress(plaintext, 1, function(compressed, error){
     if (error) {
@@ -120,10 +132,27 @@ function get_url(format) {
       } else {
         result = url;
       }
-      prompt("Copy this:", result);
+      text_offer(result);
     };
     reader.readAsDataURL(new Blob([new Uint8Array(compressed)]));
   });
+}
+
+function text_offer(text) {
+  document.getElementById("text-offer-value").value = text;
+  document.getElementById("nav").classList.add("text-offer");
+}
+
+function text_offer_copy() {
+  var input = document.getElementById("text-offer-value");
+  input.select();
+  document.execCommand('copy');
+  text_offer_cancel();
+}
+
+function text_offer_cancel() {
+  document.getElementById("text-offer-value").value = "";
+  document.getElementById("nav").classList.remove("text-offer");
 }
 
 function invert() {
@@ -135,6 +164,6 @@ function invert() {
 </head>
 <body>
 <div id="plaintext-wrapper"><textarea id="plaintext"></textarea></div>
-<div id="nav"><a class="nav-left" href="javascript:void(0)" onclick="invert()">[invert colors]</a><a href="javascript:void(0)" onclick="get_url('raw')">[get url]</a><a href="javascript:void(0)" onclick="get_url('markdown')">[get markdown link]</a></div>
+<div id="nav"><span class="nav-default"><a class="nav-left" href="https://github.com/topaz/paste">[github]</a><a class="nav-left" onclick="invert()">[invert colors]</a><a onclick="url_generate('raw')">[generate url]</a><a onclick="url_generate('markdown')">[generate markdown link]</a></span><span class="nav-text-offer"><input id="text-offer-value"/><a onclick="text_offer_copy()">[copy]</a><a onclick="text_offer_cancel()">[cancel]</a></span></div>
 </body>
 </html>
