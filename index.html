@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8"/>
+<title>paste</title>
+<style>
+* {
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 1.1em;
+}
+#plaintext {
+  width: 100%;
+  height: 100%;
+  padding: .5em;
+  border: 0;
+  margin: 0;
+  resize: none;
+  color: #eeeeee;
+  background: #000000;
+}
+body.invert #plaintext {
+  color: #000000;
+  background: #eeeeee;
+}
+#plaintext-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 2em;
+}
+#nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2em;
+  line-height: 2em;
+  text-align: right;
+  vertical-align: middle;
+  background: #333333;
+}
+body.invert #nav {
+  background: #aaaaaa;
+}
+#nav .nav-left {
+  float: left;
+}
+#nav a {
+  display: inline-block;
+  padding: 0 .5em;
+  text-decoration: none;
+  color: #ffffff;
+}
+body.invert #nav a {
+  color: #000000;
+}
+#nav a:hover {
+  background: #666666;
+}
+body.invert #nav a:hover {
+  background: #999999;
+}
+</style>
+<script src="lzma.js"></script>
+<script>
+var matches;
+var lzma = new LZMA("lzma_worker.js");
+
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById("plaintext").focus();
+
+  if (matches = /(?:^|\;)invert\=([01])(?:\;|$)/.exec(document.cookie)) {
+    if (matches[1] === '1') {
+      document.body.classList.add("invert");
+    }
+  }
+
+  var base64 = location.hash.substr(1);
+  if (base64.length == 0) return;
+
+  if (!fetch) {
+    alert("Your browser does not support this page.  Sorry! :(");
+    return;
+  }
+
+  fetch("data:application/octet-stream;base64,"+base64).then(r => r.blob()).then(function(blob){
+    var reader = new FileReader();
+    reader.onload = function(){
+      var compressed_data = Array.from(new Uint8Array(reader.result));
+      lzma.decompress(compressed_data, function(plaintext, error){
+        if (error) {
+          alert("Failed to decompress data: "+error);
+          return;
+        }
+
+        document.getElementById("plaintext").value = plaintext;
+      });
+    };
+    reader.readAsArrayBuffer(blob);
+  });
+});
+
+function get_url(format) {
+  var plaintext = document.getElementById("plaintext").value;
+  lzma.compress(plaintext, 1, function(compressed, error){
+    if (error) {
+      alert("Failed to compress data: "+error);
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(){
+      var base64 = reader.result.substr(reader.result.indexOf(",")+1);
+      var url = "https://"+location.host+location.pathname+"#"+base64;
+      var result;
+      if (format === 'reddit') {
+        result = "[paste]("+url+")";
+      } else {
+        result = url;
+      }
+      prompt("Copy this:", result);
+    };
+    reader.readAsDataURL(new Blob([new Uint8Array(compressed)]));
+  });
+}
+
+function invert() {
+  var pref = document.body.classList.contains("invert") ? 0 : 1;
+  document.cookie = "invert="+pref+";max-age=63072000";
+  document.body.classList[pref?"add":"remove"]("invert");
+}
+</script>
+</head>
+<body>
+<div id="plaintext-wrapper"><textarea id="plaintext"></textarea></div>
+<div id="nav"><a class="nav-left" href="javascript:void(0)" onclick="invert()">[invert]</a><a href="javascript:void(0)" onclick="get_url('raw')">[get url]</a><a href="javascript:void(0)" onclick="get_url('reddit')">[get reddit link]</a></div>
+</body>
+</html>
