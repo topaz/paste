@@ -83,6 +83,8 @@ var lzma = new LZMA("lzma_worker.js");
 document.addEventListener('DOMContentLoaded', function(){
   document.getElementById("plaintext").focus();
 
+  document.getElementById("plaintext").placeholder = "Enter text here.";
+
   if (matches = /(?:^|\;)invert\=([01])(?:\;|$)/.exec(document.cookie)) {
     if (matches[1] === '1') {
       document.body.classList.add("invert");
@@ -163,7 +165,7 @@ function invert() {
 </script>
 </head>
 <body>
-<div id="plaintext-wrapper"><textarea id="plaintext" spellcheck="false"></textarea></div>
+<div id="plaintext-wrapper"><textarea id="plaintext" spellcheck="false" placeholder="Please enable JavaScript."></textarea></div>
 <div id="nav"><span class="nav-default"><a class="nav-left" href="https://github.com/topaz/paste">[github]</a><a class="nav-left" onclick="invert()">[invert colors]</a><a onclick="url_generate('raw')">[generate url]</a><a onclick="url_generate('markdown')">[generate markdown link]</a></span><span class="nav-text-offer"><input id="text-offer-value"/><a onclick="text_offer_copy()">[copy]</a><a onclick="text_offer_cancel()">[cancel]</a></span></div>
 </body>
 </html>
