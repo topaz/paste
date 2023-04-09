@@ -74,6 +74,7 @@ body.invert #nav a:hover {
 #nav .nav-text-offer { display:none; }
 #nav.text-offer .nav-default { display:none; }
 #nav.text-offer .nav-text-offer { display:inline; }
+noscript {position:absolute; padding:1em; color:#eee; background:#000;}
 </style>
 <script src="lzma.js"></script>
 <script>
@@ -165,5 +166,6 @@ function invert() {
 <body>
 <div id="plaintext-wrapper"><textarea id="plaintext" spellcheck="false"></textarea></div>
 <div id="nav"><span class="nav-default"><a class="nav-left" href="https://github.com/topaz/paste">[github]</a><a class="nav-left" onclick="invert()">[invert colors]</a><a onclick="url_generate('raw')">[generate url]</a><a onclick="url_generate('markdown')">[generate markdown link]</a></span><span class="nav-text-offer"><input id="text-offer-value"/><a onclick="text_offer_copy()">[copy]</a><a onclick="text_offer_cancel()">[cancel]</a></span></div>
+<noscript>Please enable JavaScript.</noscript>
 </body>
 </html>
